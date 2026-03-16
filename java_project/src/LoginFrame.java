@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 public class LoginFrame  {
     JFrame frame = new JFrame();
 
+
     public LoginFrame() {
         frame.setTitle("Student Result System - Login");
         frame.setSize(900, 540);

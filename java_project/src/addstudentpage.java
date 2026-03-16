@@ -10,7 +10,7 @@ public class addstudentpage extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
         setVisible(true);
-        setSize(400,300);
+        setSize(600,300);
 
         JLabel banner=new JLabel("Student Details");
         banner.setBounds(150,20,200,25);

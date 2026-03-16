@@ -13,11 +13,13 @@ public class Adminfunction {
     private final String id;
     private final char[] password;
     private String displayName;
+    private String adminDepartment;
 
     Adminfunction(String id, char[] password) {
         this.id = id == null ? "" : id.trim();
         this.password = password == null ? new char[0] : password;
         this.displayName = this.id.isBlank() ? "Administrator" : ("Admin " + this.id);
+        this.adminDepartment = "N/A";
     }
 
     boolean verify() {
@@ -41,7 +43,7 @@ public class Adminfunction {
                 if (!ok) {
                     LOGGER.log(Level.WARNING, "Admin login failed. Invalid password for id={0}", id);
                 } else {
-                    loadDisplayName();
+                    loadProfile();
                 }
                 return ok;
             }
@@ -57,6 +59,10 @@ public class Adminfunction {
 
     String getDisplayName() {
         return displayName;
+    }
+
+    String getDepartment() {
+        return adminDepartment;
     }
 
     private boolean matchesPassword(char[] rawPassword, String storedPassword) {
@@ -94,35 +100,46 @@ public class Adminfunction {
         }
     }
 
-    private void loadDisplayName() {
+    private void loadProfile() {
         try (Connection con = DBConnection.getDbConnection()) {
             String nameColumn = resolveFirstExistingAdminNameColumn(con);
-            if (nameColumn == null) {
+            String departmentColumn = resolveFirstExistingColumn(con, "admin", new String[]{"department", "dept"});
+            if (nameColumn == null && departmentColumn == null) {
                 return;
             }
-            String sql = "select " + nameColumn + " from admin where admin_id=?";
+            String selectName = nameColumn == null ? "NULL as admin_name" : nameColumn + " as admin_name";
+            String selectDept = departmentColumn == null ? "NULL as admin_department" : departmentColumn + " as admin_department";
+            String sql = "select " + selectName + ", " + selectDept + " from admin where admin_id=?";
             try (PreparedStatement pt = con.prepareStatement(sql)) {
                 pt.setString(1, id);
                 try (ResultSet rs = pt.executeQuery()) {
                     if (rs.next()) {
-                        String name = rs.getString(1);
+                        String name = rs.getString("admin_name");
                         if (name != null && !name.trim().isEmpty()) {
                             displayName = name.trim();
+                        }
+                        String department = rs.getString("admin_department");
+                        if (department != null && !department.trim().isEmpty()) {
+                            adminDepartment = department.trim();
                         }
                     }
                 }
             }
         } catch (Exception ignored) {
-            // keep fallback display name
+            // keep fallback profile values
         }
     }
 
     private String resolveFirstExistingAdminNameColumn(Connection con) {
         String[] candidates = {"admin_name", "name", "full_name"};
+        return resolveFirstExistingColumn(con, "admin", candidates);
+    }
+
+    private String resolveFirstExistingColumn(Connection con, String tableName, String[] candidates) {
         try {
             DatabaseMetaData meta = con.getMetaData();
             for (String candidate : candidates) {
-                try (ResultSet cols = meta.getColumns(con.getCatalog(), null, "admin", candidate)) {
+                try (ResultSet cols = meta.getColumns(con.getCatalog(), null, tableName, candidate)) {
                     if (cols.next()) {
                         return candidate;
                     }

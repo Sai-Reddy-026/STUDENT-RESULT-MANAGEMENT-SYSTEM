@@ -36,12 +36,17 @@ public class TeacherFrame {
         titleWrap.add(Box.createRigidArea(new Dimension(0, 6)));
         titleWrap.add(subtitle);
 
-        JLabel chip = new JLabel("Teacher: " + check.getTeacherName());
+        String teacherName = safeValue(check.getTeacherName());
+        String teacherId = safeValue(check.getId());
+        String teacherDepartment = safeValue(check.getTeacherDepartment());
+        JLabel chip = new JLabel("<html><b>Name:</b> " + teacherName
+                + "<br/><b>ID:</b> " + teacherId
+                + "<br/><b>Department:</b> " + teacherDepartment + "</html>");
         chip.setOpaque(true);
         chip.setBackground(new Color(226, 244, 237));
         chip.setForeground(new Color(29, 114, 86));
-        chip.setBorder(new EmptyBorder(8, 12, 8, 12));
-        chip.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        chip.setBorder(new EmptyBorder(10, 12, 10, 12));
+        chip.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         header.add(titleWrap, BorderLayout.WEST);
         header.add(chip, BorderLayout.EAST);
@@ -354,5 +359,12 @@ public class TeacherFrame {
         button.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return button;
+    }
+
+    private String safeValue(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return "N/A";
+        }
+        return value.trim();
     }
 }

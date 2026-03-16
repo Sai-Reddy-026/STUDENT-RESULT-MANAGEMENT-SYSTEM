@@ -27,15 +27,32 @@ public class AdminFrame  {
     });
     private TableRowSorter<DefaultTableModel> resultsSorter;
     private final String adminDisplayName;
+    private final String adminId;
+    private final String adminDepartment;
 
     public AdminFrame() {
-        this("Administrator");
+        this("Administrator", "N/A", "N/A");
     }
 
     public AdminFrame(String adminDisplayName) {
-        this.adminDisplayName = (adminDisplayName == null || adminDisplayName.isBlank()) ? "Administrator" : adminDisplayName;
+        this(adminDisplayName, "N/A", "N/A");
+    }
+
+    public AdminFrame(Adminfunction admin) {
+        this(
+                admin == null ? "Administrator" : admin.getDisplayName(),
+                admin == null ? "N/A" : admin.getId(),
+                admin == null ? "N/A" : admin.getDepartment()
+        );
+    }
+
+    private AdminFrame(String adminDisplayName, String adminId, String adminDepartment) {
+        this.adminDisplayName = safeValue(adminDisplayName, "Administrator");
+        this.adminId = safeValue(adminId, "N/A");
+        this.adminDepartment = safeValue(adminDepartment, "N/A");
         frame.setTitle("Admin Dashboard");
-        frame.setSize(920, 560);
+        frame.setSize(1120, 720);
+        frame.setMinimumSize(new Dimension(980, 640));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
@@ -45,7 +62,11 @@ public class AdminFrame  {
         root.setBackground(new Color(243, 247, 255));
 
         JPanel header = new JPanel(new BorderLayout());
-        header.setOpaque(false);
+        header.setBackground(Color.WHITE);
+        header.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(214, 223, 242)),
+                new EmptyBorder(14, 14, 14, 14)
+        ));
 
         JLabel title = new JLabel("Admin Dashboard");
         title.setFont(new Font("Segoe UI", Font.BOLD, 32));
@@ -56,7 +77,8 @@ public class AdminFrame  {
         subtitle.setForeground(new Color(96, 111, 144));
 
         JPanel titleBlock = new JPanel();
-        titleBlock.setOpaque(false);
+        titleBlock.setOpaque(true);
+        titleBlock.setBackground(Color.WHITE);
         titleBlock.setLayout(new BoxLayout(titleBlock, BoxLayout.Y_AXIS));
         titleBlock.add(title);
         titleBlock.add(Box.createRigidArea(new Dimension(0, 6)));
@@ -64,12 +86,14 @@ public class AdminFrame  {
 
         header.add(titleBlock, BorderLayout.WEST);
 
-        JLabel adminChip = new JLabel("Admin: " + this.adminDisplayName);
-        adminChip.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        JLabel adminChip = new JLabel("<html><b>Name:</b> " + this.adminDisplayName
+                + "<br/><b>ID:</b> " + this.adminId
+                + "<br/><b>Department:</b> " + this.adminDepartment + "</html>");
+        adminChip.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         adminChip.setForeground(new Color(37, 93, 180));
         adminChip.setOpaque(true);
         adminChip.setBackground(new Color(231, 241, 255));
-        adminChip.setBorder(new EmptyBorder(8, 12, 8, 12));
+        adminChip.setBorder(new EmptyBorder(10, 12, 10, 12));
         header.add(adminChip, BorderLayout.EAST);
 
         cards.setOpaque(false);
@@ -148,10 +172,14 @@ public class AdminFrame  {
 
         JPanel formCard = new JPanel(new GridBagLayout());
         formCard.setBackground(Color.WHITE);
-        formCard.setBorder(new EmptyBorder(20, 20, 20, 20));
+        formCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(214, 223, 242)),
+                new EmptyBorder(26, 30, 24, 30)
+        ));
+        formCard.setPreferredSize(new Dimension(820, 420));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
         JTextField idField = createInputField();
@@ -160,11 +188,22 @@ public class AdminFrame  {
         JTextField emailField = createInputField();
         JPasswordField passField = createPasswordField();
 
-        addFormRow(formCard, gbc, 0, "Teacher ID", idField);
-        addFormRow(formCard, gbc, 1, "Name", nameField);
-        addFormRow(formCard, gbc, 2, "Department", deptField);
-        addFormRow(formCard, gbc, 3, "Email", emailField);
-        addFormRow(formCard, gbc, 4, "Password", passField);
+        JLabel formTitle = new JLabel("Teacher Details");
+        formTitle.setFont(new Font("Segoe UI", Font.BOLD, 19));
+        formTitle.setForeground(new Color(38, 57, 97));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(0, 8, 14, 8);
+        formCard.add(formTitle, gbc);
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(8, 8, 8, 8);
+
+        addFormRow(formCard, gbc, 1, "Teacher ID", idField);
+        addFormRow(formCard, gbc, 2, "Full Name", nameField);
+        addFormRow(formCard, gbc, 3, "Department", deptField);
+        addFormRow(formCard, gbc, 4, "Email", emailField);
+        addFormRow(formCard, gbc, 5, "Password", passField);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actions.setOpaque(false);
@@ -224,10 +263,14 @@ public class AdminFrame  {
 
         JPanel formCard = new JPanel(new GridBagLayout());
         formCard.setBackground(Color.WHITE);
-        formCard.setBorder(new EmptyBorder(20, 20, 20, 20));
+        formCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(214, 223, 242)),
+                new EmptyBorder(26, 30, 24, 30)
+        ));
+        formCard.setPreferredSize(new Dimension(820, 420));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
         JTextField idField = createInputField();
@@ -236,11 +279,22 @@ public class AdminFrame  {
         JTextField emailField = createInputField();
         JPasswordField passField = createPasswordField();
 
-        addFormRow(formCard, gbc, 0, "Student ID", idField);
-        addFormRow(formCard, gbc, 1, "Name", nameField);
-        addFormRow(formCard, gbc, 2, "Department", deptField);
-        addFormRow(formCard, gbc, 3, "Email", emailField);
-        addFormRow(formCard, gbc, 4, "Password", passField);
+        JLabel formTitle = new JLabel("Student Details");
+        formTitle.setFont(new Font("Segoe UI", Font.BOLD, 19));
+        formTitle.setForeground(new Color(38, 57, 97));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(0, 8, 14, 8);
+        formCard.add(formTitle, gbc);
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(8, 8, 8, 8);
+
+        addFormRow(formCard, gbc, 1, "Student ID", idField);
+        addFormRow(formCard, gbc, 2, "Full Name", nameField);
+        addFormRow(formCard, gbc, 3, "Department", deptField);
+        addFormRow(formCard, gbc, 4, "Email", emailField);
+        addFormRow(formCard, gbc, 5, "Password", passField);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actions.setOpaque(false);
@@ -560,23 +614,34 @@ public class AdminFrame  {
 
     private JTextField createInputField() {
         JTextField field = new JTextField();
-        field.setPreferredSize(new Dimension(260, 34));
+        field.setColumns(24);
+        field.setPreferredSize(new Dimension(420, 36));
+        field.setMinimumSize(new Dimension(420, 36));
         field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         field.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(196, 208, 230)),
-                new EmptyBorder(6, 8, 6, 8)
+                new EmptyBorder(7, 10, 7, 10)
         ));
         return field;
     }
 
     private JPasswordField createPasswordField() {
         JPasswordField field = new JPasswordField();
-        field.setPreferredSize(new Dimension(260, 34));
+        field.setColumns(24);
+        field.setPreferredSize(new Dimension(420, 36));
+        field.setMinimumSize(new Dimension(420, 36));
         field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         field.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(196, 208, 230)),
-                new EmptyBorder(6, 8, 6, 8)
+                new EmptyBorder(7, 10, 7, 10)
         ));
         return field;
+    }
+
+    private String safeValue(String value, String fallback) {
+        if (value == null || value.trim().isEmpty()) {
+            return fallback;
+        }
+        return value.trim();
     }
 }

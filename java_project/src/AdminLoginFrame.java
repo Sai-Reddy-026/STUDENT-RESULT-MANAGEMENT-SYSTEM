@@ -140,7 +140,7 @@ public class AdminLoginFrame extends JFrame {
                 lockoutUntil = 0L;
                 infoLabel.setText(" ");
                 dispose();
-                new AdminFrame(admin.getDisplayName());
+                new AdminFrame(admin);
                 return;
             }
 

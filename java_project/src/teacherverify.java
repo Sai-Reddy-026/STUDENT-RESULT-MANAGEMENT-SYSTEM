@@ -16,11 +16,13 @@ public class teacherverify extends DBConnection {
     private final String id;
     private final char[] password;
     private String teacherName;
+    private String teacherDepartment;
 
     teacherverify(String id,char[] password) {
         this.id = id == null ? "" : id.trim();
         this.password = password;
         this.teacherName = this.id;
+        this.teacherDepartment = "N/A";
         try (Connection con = getDbConnection();
              PreparedStatement pt = con.prepareStatement("select password from teacher where teacher_id=?")) {
             pt.setString(1, this.id);
@@ -32,7 +34,7 @@ public class teacherverify extends DBConnection {
                 String storedPassword = res.getString(1);
                 status = matchesPassword(this.password, storedPassword);
                 if (status) {
-                    loadTeacherName(con);
+                    loadTeacherProfile(con);
                 }
             }
         } catch (Exception e) {
@@ -52,6 +54,10 @@ public class teacherverify extends DBConnection {
 
     public String getTeacherName() {
         return teacherName;
+    }
+
+    public String getTeacherDepartment() {
+        return teacherDepartment;
     }
 
     public void insertdata(String roll, String course, String marks) {
@@ -153,24 +159,31 @@ public class teacherverify extends DBConnection {
         }
     }
 
-    private void loadTeacherName(Connection con) {
+    private void loadTeacherProfile(Connection con) {
         String nameColumn = resolveFirstExistingColumn(con, "teacher", new String[]{"teacher_name", "name"});
-        if (nameColumn == null) {
+        String departmentColumn = resolveFirstExistingColumn(con, "teacher", new String[]{"department", "dept"});
+        if (nameColumn == null && departmentColumn == null) {
             return;
         }
-        String sql = "select " + nameColumn + " from teacher where teacher_id=?";
+        String selectName = nameColumn == null ? "NULL as teacher_name" : nameColumn + " as teacher_name";
+        String selectDept = departmentColumn == null ? "NULL as teacher_department" : departmentColumn + " as teacher_department";
+        String sql = "select " + selectName + ", " + selectDept + " from teacher where teacher_id=?";
         try (PreparedStatement pt = con.prepareStatement(sql)) {
             pt.setString(1, this.id);
             try (ResultSet rs = pt.executeQuery()) {
                 if (rs.next()) {
-                    String name = rs.getString(1);
+                    String name = rs.getString("teacher_name");
                     if (name != null && !name.trim().isEmpty()) {
                         teacherName = name.trim();
+                    }
+                    String dept = rs.getString("teacher_department");
+                    if (dept != null && !dept.trim().isEmpty()) {
+                        teacherDepartment = dept.trim();
                     }
                 }
             }
         } catch (Exception ignored) {
-            // Keep fallback to ID if name lookup fails.
+            // Keep fallback values if profile lookup fails.
         }
     }
 
