@@ -106,6 +106,13 @@ public class StudentLoginFrame extends JFrame {
         card.add(Box.createRigidArea(new Dimension(0, 8)));
         card.add(loginBtn);
 
+        JButton forgotPasswordBtn = new JButton("Forgot Password?");
+        styleLinkButton(forgotPasswordBtn);
+        forgotPasswordBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        card.add(Box.createRigidArea(new Dimension(0, 8)));
+        card.add(forgotPasswordBtn);
+
         loginBtn.addActionListener(e -> {
             long now = System.currentTimeMillis();
             if (now < lockoutUntil) {
@@ -138,6 +145,10 @@ public class StudentLoginFrame extends JFrame {
                     infoLabel.setText("Invalid Student Credentials");
                 }
             }
+        });
+
+        forgotPasswordBtn.addActionListener(e -> {
+            new ForgotPasswordDialog(this, "student");
         });
 
         backBtn.addActionListener(e -> {
@@ -180,5 +191,16 @@ public class StudentLoginFrame extends JFrame {
         button.setFont(new Font("Segoe UI", Font.BOLD, 13));
         button.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
+    private void styleLinkButton(JButton button) {
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setBackground(Color.WHITE);
+        button.setForeground(new Color(32, 115, 214));
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setHorizontalAlignment(SwingConstants.LEFT);
     }
 }

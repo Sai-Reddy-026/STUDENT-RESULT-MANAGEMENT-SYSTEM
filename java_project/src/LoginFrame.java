@@ -78,10 +78,6 @@ public class LoginFrame  {
 
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         footer.setOpaque(false);
-        JLabel helper = new JLabel("Tip: Each role has a separate login box for faster access.");
-        helper.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        helper.setForeground(new Color(109, 121, 146));
-        footer.add(helper);
 
         root.add(header, BorderLayout.NORTH);
         root.add(cards, BorderLayout.CENTER);

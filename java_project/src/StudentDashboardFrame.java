@@ -12,7 +12,8 @@ import java.util.regex.Pattern;
 public class StudentDashboardFrame extends JFrame {
 
     public StudentDashboardFrame(studentfunctions student) {
-        setTitle("Student Dashboard");
+        String studentName = safeValue(student.getStudentName());
+        setTitle("Welcome " + studentName);
         setSize(980, 620);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -26,7 +27,7 @@ public class StudentDashboardFrame extends JFrame {
         header.setBackground(new Color(34, 69, 124));
         header.setBorder(new EmptyBorder(18, 20, 18, 20));
 
-        JLabel title = new JLabel("Student Dashboard");
+        JLabel title = new JLabel("Welcome " + studentName);
         title.setFont(new Font("Segoe UI", Font.BOLD, 30));
         title.setForeground(Color.WHITE);
 
@@ -42,7 +43,6 @@ public class StudentDashboardFrame extends JFrame {
         titleWrap.add(Box.createRigidArea(new Dimension(0, 6)));
         titleWrap.add(subtitle);
 
-        String studentName = safeValue(student.getStudentName());
         String studentId = safeValue(student.getId());
         String studentDepartment = safeValue(student.getStudentDepartment());
         JLabel studentChip = new JLabel("<html><b>Name:</b> " + studentName

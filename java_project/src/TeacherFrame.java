@@ -8,7 +8,8 @@ public class TeacherFrame {
     JFrame frame = new JFrame();
 
     public TeacherFrame(teacherverify check) {
-        frame.setTitle("Teacher Dashboard");
+        String teacherName = safeValue(check.getTeacherName());
+        frame.setTitle("Welcome " + teacherName);
         frame.setSize(900, 560);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -21,7 +22,7 @@ public class TeacherFrame {
         JPanel header = new JPanel(new BorderLayout());
         header.setOpaque(false);
 
-        JLabel title = new JLabel("Teacher Dashboard");
+        JLabel title = new JLabel("Welcome " + teacherName);
         title.setFont(new Font("Segoe UI", Font.BOLD, 32));
         title.setForeground(new Color(34, 50, 84));
 
@@ -36,7 +37,6 @@ public class TeacherFrame {
         titleWrap.add(Box.createRigidArea(new Dimension(0, 6)));
         titleWrap.add(subtitle);
 
-        String teacherName = safeValue(check.getTeacherName());
         String teacherId = safeValue(check.getId());
         String teacherDepartment = safeValue(check.getTeacherDepartment());
         JLabel chip = new JLabel("<html><b>Name:</b> " + teacherName
